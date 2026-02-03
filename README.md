@@ -55,7 +55,23 @@ module load intel-ispc/latest
 git clone https://github.com/princeton-ece476/assignment1.git
 ```
 
-3. The assignment has multiple parts. In order to run each part, you have been provided a Makefile within each directory. To build a program,
+3. Create a new, empty GitHub repository at https://github.com/new
+    - Choose your own repository name and description.
+    - Set visibility to **Private**.
+    - No template, Do not add README, .gitignore or license.
+    - After creation, in the highlighted "Quick setup", copy the repository link, it should look something like `https://github.com/<YOUR-GITHUB-NAME>/<YOUR-REPO-NAME>.git` or `git@github.com:<YOUR-GITHUB-NAME>/<YOUR-REPO-NAME>.git`
+      - if you are new to GitHub, maybe you have not [set up the SSH keys](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account?platform=linux). It is advised to set up SSH keys on Adroit, upload to github and use the SSH method, which prevents authorization issues.
+    - Go to "Settings -> Collaborators" and add your partner.
+
+4. On adroit, set your repo to push to your own repository.
+```shell
+git remote rename origin release
+git remote add origin git@github.com:<YOUR-GITHUB-NAME>/<YOUR-REPO-NAME>.git
+git push --set-upstream origin main
+```
+By doing this you manually created a fork of the release repository, renamed the original remote to "release", and marked your own remote repository as the upstream. The reason we are not forking GitHub web interface is because a GitHub fork does not allow you to change repository visibility, but your fork needs to be private.
+
+4. The assignment has multiple parts. In order to run each part, you have been provided a Makefile within each directory. To build a program,
 
 ```bash
 cd <dir>
@@ -404,13 +420,9 @@ Handin will be performed via [Gradescope](https://www.gradescope.com/courses/119
 Please place the following in `Assignment 1 (Write-Up)`:
 * Your writeup, in a file called `writeup.pdf`. Please make sure both group members' names and PUNet id's are in the document. (if you are a group of two) Also the write-up has to be typed out. Handwritten submissions will be automatically discarded.
 
-Please place the following in `Assignment 1 (Code)`:
-* Your implementation in Program 1, specifically the file named `mandelbrotThread.cpp`.
-* Your implementation in Program 2, specifically the file named `prob2.cpp`
-* Your implementation in Program 6, specifically the file named `prob6.cpp`
-* Any additional code, for example, because you attempted an extra credit
+For `Assignment 1 (Code)`: Go to your GitHub repository and click "Code -> Download ZIP". Alternatively, you can also let Gradescope do it for you - Click "Submit" on Gradescope, under "Submission Method", choose GitHub, link you account and select your repository.
 
-Please tell the CAs to look for your extra credit in your write-up. When handed in, all code must be compilable and runnable using Slurm on adroit machines!
+Please tell the TAs to look for your extra credit in your write-up. When handed in, all code must be compilable and runnable using Slurm on adroit machines!
 
 ## Resources and Notes ##
 
