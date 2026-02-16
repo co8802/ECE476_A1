@@ -86,6 +86,90 @@ void clampedExpVector(float* values, int* exponents, float* output, int N) {
   // N and VECTOR_WIDTH, not just when VECTOR_WIDTH divides N
   //
   //
+
+  __prog2_vec_float x, result, maxVal;
+  __prog2_vec_int y, count, zeroInt, oneInt;
+
+  __prog2_mask maskAll, maskYisZero, maskNotZero, maskActive, maskTooBig;
+
+  maxVal = _prog2_vset_float(9.999999f);
+  zeroInt = _prog2_vset_int(0);
+  oneInt = _prog2_vset_int(1);
+
+  // jump by vector_width for SIMD
+  for (int i = 0; i < N; i += VECTOR_WIDTH) {
+    // out of bounds
+    int width = VECTOR_WIDTH;
+    if (i + VECTOR_WIDTH > N) {
+      width = N - i;
+    }
+    // ex: if i = 8 and N = 10 -> maskAll = [1 1 0 0]
+    maskAll = _prog2_init_ones(width);
+
+  // load data
+  _prog2_vload_float(x, values + i, maskAll);
+  _prog2_vload_int(y, exponents + i, maskAll);
+
+  // if (y == 0) output[i] = 1
+  // anything to the exponent of 0 is 1
+  _prog2_vset_float(result, 1.f, maskAll);
+
+  // find lanes where exponent == 0
+  _prog2_veq_int(maskYisZero, y, zeroInt, maskAll);
+
+  // mask for exponent != 0;
+  maskNotZero = _prog2_mask_not(maskYisZero);
+  maskNotZero = _prog2_mask_and(maskNotZero, maskAll);
+
+  // for y != 0 lanes, result = x
+  _prog2_vmove_float(result, x, maskNotZero);
+
+  // then subtract count by 1
+  // count = y - 1
+  _prog2_vsub_int(count, y, oneInt, maskNotZero);
+
+  // while count > 0
+  // for exponents that are 2 or greater
+  // if exponent is 2, then the while loop runs once, and so on
+  _prog2_vgt_int(maskActive, count, zeroInt, maskNotZero);
+  while (_prog2_cntbits(maskActive) > 0) {
+    // result *= x
+    _prog2_vmult_float(result, result, x, maskActive);
+    // count--
+    _prog2_vsub_int(count, count, oneInt, maskActive);
+    // recompute maskActive 
+    _prog2_vgt_int(maskActive, count, zeroInt, maskNotZero);
+  }
+
+  // if (result > 9.999999f) {
+  //    result = 9.999999f;
+  //  }
+  _prog2_vgt_float(maskTooBig, result, maxVal, maskAll);
+  _prog2_vmove_float(result, maxVal, maskTooBig);
+
+  _prog2_vstore_float(output + i, result, maskAll);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  }
+
+
+
 }
 
 // returns the sum of all elements in values
